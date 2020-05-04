@@ -24,7 +24,7 @@ namespace Enterprise.Models
 
         [Required]
         [Range(1.0, 1000000.0, ErrorMessage = "the price of an item must be between 1 and 1000000")]
-        public int Price { get; set; }
+        public decimal Price { get; set; }
 
         [Key]
         public int UserId { get; set; }
