@@ -12,7 +12,7 @@ namespace Enterprise.Models
         public int Id { get; set; }
 
         [Required]
-        [MinLength(2, ErrorMessage = "Categoy name is too short")]
+        [MinLength(2, ErrorMessage = "Category name is too short")]
         public string Name { get; set; }
 
     }

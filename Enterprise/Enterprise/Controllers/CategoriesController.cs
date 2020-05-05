@@ -9,6 +9,7 @@ using System.Net;
 
 namespace Enterprise.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class CategoriesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
