@@ -29,5 +29,13 @@ namespace Enterprise.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<Enterprise.Models.Category> Categories { get; set; }
+
+        public System.Data.Entity.DbSet<Enterprise.Models.ItemType> ItemTypes { get; set; }
+
+        public System.Data.Entity.DbSet<Enterprise.Models.Item> Items { get; set; }
+
+
     }
 }
