@@ -22,7 +22,7 @@ namespace Enterprise.Models
         public int Quantity { get; set; }
 
         [Required]
-        [MinLength(2,ErrorMessage = "text too short")]
+        [RegularExpression("Excellent|Good|Poor|Bad")]
         public string Quality { get; set; }
 
         [Required]
@@ -30,7 +30,7 @@ namespace Enterprise.Models
         public decimal Price { get; set; }
 
         [Key, Column(Order = 2)]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
     }
 }

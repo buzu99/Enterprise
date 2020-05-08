@@ -11,6 +11,8 @@ using Dropbox.Api.Files;
 
 namespace Enterprise.Controllers
 {
+    [Authorize(Roles = "RegisteredUser")]
+
     public class ItemTypeController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -45,15 +47,44 @@ namespace Enterprise.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,CategoryId,Name")] ItemType itemType)
+        public ActionResult Create([Bind(Include = "Id,CategoryId,Name")] ItemType itemType,HttpPostedFileBase Image)
         {
-            if(ModelState.IsValid)
-            {
-                db.ItemTypes.Add(itemType);
-                db.SaveChanges();
-                return RedirectToAction("Index");
 
+            if (ModelState.IsValid)
+            {
+
+                if (!db.ItemTypes.Any(i => i.Name == itemType.Name))
+                {
+                    string accessToken = "****";
+                    using (DropboxClient client =
+                          new DropboxClient(accessToken, new DropboxClientConfig(ApplicationName)))
+                    {
+                        string[] spitInputFileName = Image.FileName.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
+                        string fileNameAndExtension = spitInputFileName[spitInputFileName.Length - 1];
+
+                        string[] fileNameAndExtensionSplit = fileNameAndExtension.Split('.');
+                        string originalFileName = fileNameAndExtensionSplit[0];
+                        string originalExtension = fileNameAndExtensionSplit[1];
+
+
+                        String fileName = "@/Images/" + originalFileName + Guid.NewGuid().ToString().Replace("-", "") + "." + originalExtension;
+                        var updated = client.Files.UploadAsync(
+                              fileName,
+                              mode: WriteMode.Overwrite.Overwrite.Instance,
+                             body: Image.InputStream).Result;
+
+                        var result = client.Sharing.CreateSharedLinkWithSettingsAsync(fileName).Result;
+                        itemType.Image = result.Url.Replace("?dl=0", "?raw=1");
+
+
+                    }
+                    db.ItemTypes.Add(itemType);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
+
+            
 
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", itemType.CategoryId);
             return View(itemType);
@@ -76,7 +107,7 @@ namespace Enterprise.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,CategoyId,Name")] ItemType itemType)
+        public ActionResult Edit([Bind(Include = "Id,CategoryId,Name")] ItemType itemType)
         {
             if (ModelState.IsValid)
             {
@@ -124,6 +155,7 @@ namespace Enterprise.Controllers
         [HttpPost]
         public ActionResult UploadImage(HttpPostedFileBase file )
         {
+            ItemType itemType = new ItemType(); ;
             string accessToken = "****";
             using (DropboxClient client =
                  new DropboxClient(accessToken, new DropboxClientConfig(ApplicationName)))
@@ -143,9 +175,14 @@ namespace Enterprise.Controllers
                       body: file.InputStream).Result;
 
                 var result = client.Sharing.CreateSharedLinkWithSettingsAsync(fileName).Result;
+                itemType.Image = result.Url.Replace("?dl=0","?raw=1");
 
-                return RedirectToAction("ViewImage", "ItemType", new { ImageUrl = result.Url });
+
             }
+            db.ItemTypes.Add(itemType);
+            db.SaveChanges();
+            return RedirectToAction("Index" );
+
         }
 
 

@@ -21,9 +21,15 @@ namespace Enterprise.Models
         [MinLength(2, ErrorMessage ="Your type name is short")]
         public string Name { get; set; }
 
-        [Required]
+        //[Required]
         [MinLength(2, ErrorMessage ="image url cannot be that short")]
         public string Image { get; set; }
+
+
+        [NotMapped]
+        public HttpPostedFileBase ImageFile { get; set; }
+
+
 
     }
 }

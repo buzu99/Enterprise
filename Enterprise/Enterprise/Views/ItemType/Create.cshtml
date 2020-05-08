@@ -31,11 +31,11 @@
         </div>
     </div>
 
-    @using (Html.BeginForm("UploadImage", "ItemType", FormMethod.Post,
+    @using (Html.BeginForm("Create", "ItemType", FormMethod.Post,
                                 new { enctype = "multipart/form-data" }))
     {
-        <label for="file">Upload Image:</label>
-        <input type="file" name="file" id="file" style="width: 100%;" />
+        <label for="model.Image">Upload Image:</label>
+        <input type="file" name="ImageFile" id="model.Image" style="width: 100%;" />
 
         <input type="submit" value="Upload" class="submit" />
     }

@@ -6,9 +6,12 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using System.Net;
+using Microsoft.AspNet.Identity;
 
 namespace Enterprise.Controllers
 {
+    [Authorize(Roles = "RegisteredUser")]
+
     public class ItemsController : Controller
     {
 
@@ -45,8 +48,9 @@ namespace Enterprise.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,TypeId,Quantity,Quality,Price")] Item item)
+        public ActionResult Create([Bind(Include = "Id,TypeId,Quantity,Quality,Price,UserId")] Item item)
         {
+            item.UserId = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
                 db.Items.Add(item);
