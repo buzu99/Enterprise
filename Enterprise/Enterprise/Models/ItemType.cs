@@ -22,12 +22,10 @@ namespace Enterprise.Models
         public string Name { get; set; }
 
         //[Required]
-        [MinLength(2, ErrorMessage ="image url cannot be that short")]
         public string Image { get; set; }
 
 
-        [NotMapped]
-        public HttpPostedFileBase ImageFile { get; set; }
+        public string ImageUrl { get; set; }
 
 
 

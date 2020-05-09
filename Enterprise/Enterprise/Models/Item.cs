@@ -15,6 +15,8 @@ namespace Enterprise.Models
         [Key,Column(Order = 1)]
         public int TypeId { get; set; }
 
+
+        [Index("IX_itemt", 1, IsUnique = true)]
         public ItemType ItemType { get; set; }
 
         [Required]
@@ -22,10 +24,13 @@ namespace Enterprise.Models
         public int Quantity { get; set; }
 
         [Required]
+        [Index("IX_itemt",2 , IsUnique = true)]
         [RegularExpression("Excellent|Good|Poor|Bad")]
         public string Quality { get; set; }
 
         [Required]
+        [Index("IX_itemt", 3, IsUnique = true)]
+
         [Range(1.0, 1000000.0, ErrorMessage = "the price of an item must be between 1 and 1000000")]
         public decimal Price { get; set; }
 

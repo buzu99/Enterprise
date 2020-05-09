@@ -47,41 +47,53 @@ namespace Enterprise.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,CategoryId,Name")] ItemType itemType,HttpPostedFileBase Image)
+        public ActionResult Create([Bind(Include = "Id,CategoryId,Name")] HttpPostedFileBase Image , ItemType itemType)
         {
 
             if (ModelState.IsValid)
             {
-
-                if (!db.ItemTypes.Any(i => i.Name == itemType.Name))
+                if (Image == null)
                 {
-                    string accessToken = "****";
-                    using (DropboxClient client =
-                          new DropboxClient(accessToken, new DropboxClientConfig(ApplicationName)))
-                    {
-                        string[] spitInputFileName = Image.FileName.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
-                        string fileNameAndExtension = spitInputFileName[spitInputFileName.Length - 1];
-
-                        string[] fileNameAndExtensionSplit = fileNameAndExtension.Split('.');
-                        string originalFileName = fileNameAndExtensionSplit[0];
-                        string originalExtension = fileNameAndExtensionSplit[1];
-
-
-                        String fileName = "@/Images/" + originalFileName + Guid.NewGuid().ToString().Replace("-", "") + "." + originalExtension;
-                        var updated = client.Files.UploadAsync(
-                              fileName,
-                              mode: WriteMode.Overwrite.Overwrite.Instance,
-                             body: Image.InputStream).Result;
-
-                        var result = client.Sharing.CreateSharedLinkWithSettingsAsync(fileName).Result;
-                        itemType.Image = result.Url.Replace("?dl=0", "?raw=1");
-
-
-                    }
-                    db.ItemTypes.Add(itemType);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    ModelState.AddModelError("Image", "Image cannot be empty");
+                    ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", itemType.CategoryId);
+                    return View(itemType);
                 }
+                else
+                
+
+
+
+                    if (!db.ItemTypes.Any(i => i.Name == itemType.Name))
+                    {
+                        string accessToken = "rLO2hkO01AAAAAAAAABGip4dgqIUMoDGUcO0qvfukgANmcBQTL7_B2LvRb0hRf2";
+                        using (DropboxClient client =
+                              new DropboxClient(accessToken, new DropboxClientConfig(ApplicationName)))
+                        {
+                            string[] spitInputFileName = Image.FileName.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
+                            string fileNameAndExtension = spitInputFileName[spitInputFileName.Length - 1];
+
+                            string[] fileNameAndExtensionSplit = fileNameAndExtension.Split('.');
+                            string originalFileName = fileNameAndExtensionSplit[0];
+                            string originalExtension = fileNameAndExtensionSplit[1];
+
+
+                            String fileName = "@/Images/" + originalFileName + Guid.NewGuid().ToString().Replace("-", "") + "." + originalExtension;
+                            var updated = client.Files.UploadAsync(
+                                  fileName,
+                                  mode: WriteMode.Overwrite.Overwrite.Instance,
+                                 body: Image.InputStream).Result;
+
+                            var result = client.Sharing.CreateSharedLinkWithSettingsAsync(fileName).Result;
+                            itemType.ImageUrl = result.Name;
+                            itemType.Image = result.Url.Replace("?dl=0", "?raw=1");
+
+
+                        }
+                        db.ItemTypes.Add(itemType);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                
             }
 
             

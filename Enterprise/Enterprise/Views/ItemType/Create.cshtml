@@ -31,14 +31,21 @@
         </div>
     </div>
 
-    @using (Html.BeginForm("Create", "ItemType", FormMethod.Post,
+   <div class="form-group">
+       @Html.LabelFor(model=>model.Image, new { @class = "control-label col-md-2" })
+       <div class="col-md-10">
+           <input type="file" name="Image" id="Image" />
+           @Html.ValidationMessageFor(model=>model.Image,"", new {@class = "text-danger" })
+       </div>
+   </div>
+
+    @*@using (Html.BeginForm("Create", "ItemType", FormMethod.Post,
                                 new { enctype = "multipart/form-data" }))
     {
-        <label for="model.Image">Upload Image:</label>
-        <input type="file" name="ImageFile" id="model.Image" style="width: 100%;" />
+        <label for="Image">Upload Image:</label>
+        <input type="file" name="Image" id="Image" style="width: 100%;" />
 
-        <input type="submit" value="Upload" class="submit" />
-    }
+    }*@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
